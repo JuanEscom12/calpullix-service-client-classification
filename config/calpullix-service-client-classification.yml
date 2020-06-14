@@ -1,0 +1,94 @@
+spring:
+  mvc: 
+    throw-exception-if-no-handler-found: true
+  jackson:
+    deserialization: 
+      fail-on-missing-creator-properties: 'false'
+  datasource:
+    url: jdbc:mysql://localhost:3306/CALPULLIX_VIRTUAL_MANAGER_ASSISTANT?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: root
+    password: adminadmin
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+  boot:
+    admin:
+      client:
+        url: http://localhost:9550
+ 
+
+hystrix:
+  threadpool:
+    default:
+      coreSize: 35
+      maximumSize: 35
+  command: 
+    invoke: 
+      circuitBreaker:
+        requestVolumeThreshold: 35
+        sleepWindowInMilliseconds: 1000
+      metrics:
+        rollingStatus:
+          timeInMilliseconds: 60000
+      execution: 
+        isolation: 
+          thread:
+            timeoutInMilliseconds: 10000
+          semaphore: 
+            maxConcurrentRequest: 500
+            
+logging:
+  level:
+    org:
+      springframework.web: INFO
+      springframework.web.servlet.DispatcherServlet: DEBUG
+      springframework.cloud.sleuth: DEBUG
+    com.calpullix.service.login: DEBUG
+  pattern:
+    level: '[%X{data}%thread][%X{X-B3-TraceId:-}]-%5p'
+    
+    
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: '*'
+  health:
+    defaults:
+      enabled: true
+    jms:
+      enabled: false 
+
+eureka:
+  client:
+    registryFetchIntervalSeconds: 10
+    serviceUrl: 
+      defaultZone: http://localhost:8761/eureka   
+  
+app:
+  message-error-location-body: Body
+  path-get-clients: /calpullix/clients/retrieve
+  path-update-clients-classify: /calpullix/update/clients/classify
+  path-get-client-detail: /calpullix/client/detail/retreive
+  path-update-client-promotions: /calpullix/update/client/promotions
+  path-retrieve-client-product-recomendations: /calpullix/client/recomendation/product/retrieve
+  path-retrieve-client-promotions-recomendations: /calpullix/client/recomendation/promotions/retrieve
+  path-retrieve-users-regression: /calpullix/client/users/regression/retrieve
+  pagination-size: 5
+  query-branch: SELECT B.name as name FROM Product_Branch as PB, Customers as C, Branch as B WHERE PB.idCustomer = C.id AND PB.idBranch = B.id AND C.idProfile = ? GROUP BY B.name ORDER BY COUNT(*) DESC LIMIT 3
+  query-product: SELECT P.name as name FROM Product_Branch as PB, Customers as C, Product as P, Product_History as PH WHERE PB.idCustomer = C.id AND PB.idProductHistory = PH.id AND PH.idProduct = P.id AND C.idProfile = ? GROUP BY P.name ORDER BY COUNT(*) DESC LIMIT 3
+  query-state: SELECT C.state as state FROM Customers as C WHERE C.idProfile = ? GROUP BY C.state ORDER BY COUNT(*) DESC LIMIT 3
+  query-municipality: SELECT C.municipality as municipality FROM Customers as C WHERE C.idProfile = ? GROUP BY C.municipality ORDER BY COUNT(*) DESC LIMIT 3
+  profile-client-information-procedure: calpullix_profile_client_information
+  first-label-regression: Usuarios 
+  second-label-regression: Usuarios regulares
+  pagination-product-promotion-size: 10
+  left-current-label-regression: Clientes ocasionales
+  loyal-current-label-regression: Clientes frecuentes
+  left-last-label-regression: Clientes ocasionales (última clasif.)
+  loyal-last-label-regression: Clientes frecuentes (última clasif.)
+     
+ 

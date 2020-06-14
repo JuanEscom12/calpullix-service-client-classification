@@ -1,0 +1,15 @@
+spring:
+  application: 
+    name: calpullix-service-client-classification
+  config:
+    name: '${spring.application.name}'
+  cloud:
+    config:
+      uri: http://localhost:8799
+      username: root
+      password: s3cr3t
+  profiles:
+    active: default
+
+server:
+  port: 9099
